@@ -118,6 +118,9 @@ def preprocess_input(input_dict):
         elif key == 'Income in Lakhs':
             df['income_lakhs'] = value
 
+        elif key == 'Genetical Risk':
+            df['genetical_risk'] = value
+
     # Calculate normalized medical risk
     df['normalized_risk_score'] = calculate_normalized_risk(
         input_dict['Medical History']
