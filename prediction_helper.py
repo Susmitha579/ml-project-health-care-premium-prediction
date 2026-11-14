@@ -126,9 +126,6 @@ def preprocess_input(input_dict):
     # Apply scaling
     df = handle_scaling(input_dict['Age'], df)
 
-    # Remove genetical_risk before model prediction
-    df.drop(columns=['genetical_risk'], inplace=True)
-
     return df
 
 
@@ -159,10 +156,22 @@ def predict(input_dict):
 
     input_df = preprocess_input(input_dict)
 
+    # Select model based on age
     if input_dict["Age"] <= 25:
-        prediction = model_young.predict(input_df)
-
+        model = model_young
     else:
-        prediction = model_rest.predict(input_df)
+        model = model_rest
 
-    return round(float(prediction[0]))
+    # Get expected features
+    expected_features = model.feature_names_in_
+
+    # Match input columns with model features
+    input_df = input_df.reindex(
+        columns=expected_features,
+        fill_value=0
+    )
+
+    # Predict
+    prediction = model.predict(input_df)
+
+    return round(float(prediction[0]), 2)
